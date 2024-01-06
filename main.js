@@ -19,11 +19,7 @@ async function chat(message){
                   roomId: 1
                   }
                 )  
-          })
-              .then(()=>{
-                console.log(message)
-                setTimeout(resolve,500)
-              }); 
+          }).then(resolve)
     })
 }
 
@@ -81,6 +77,12 @@ async function get_chat_page(){
           let idusercheck = id_last.split('/user/')[1]   
           let text = `id của bạn là:${idusercheck}`
           chat(text).then(resolve)
+        }else if(cmt_last.includes('lập lời thề')){
+          if(Math.floor(Math.random() * 10) <=6){
+            chat("==============CHUẨN ==============").then(resolve)
+          }else{
+            chat('...').then(resolve)
+          }
         }else{
           console.log(cmt_last)
           setTimeout(resolve,1000)
@@ -92,8 +94,8 @@ async function get_top5(){
   return new Promise(resolve => {
     fetch('https://netchuyen.com/Post/Services/PostService.asmx/TopMembers?top=5',{
             method: "GET",
-        }).then((response) => response.json())
-        .then(async (data) => {
+          }).then((response) => response.json())
+          .then(async (data) => {
                let dom = new JSDOM(data.data)
                let listuser = dom.window.document.querySelectorAll('li')
                for(let i=0;i<5;i++){
@@ -116,3 +118,5 @@ async function main(){
 }
 
 main()
+
+
