@@ -78,8 +78,9 @@ async function get_chat_page(){
             chat('bạn chưa có quyền sử dụng lệnh này').then(resolve)
           }
         }else if(cmt_last =="myid"){
-          let text = `id của bạn là:${id_last}`
-          chat(text)
+          let idusercheck = id_last.split('/user/')[1]   
+          let text = `id của bạn là:${idusercheck}`
+          chat(text).then(resolve)
         }else{
           console.log(cmt_last)
           setTimeout(resolve,1000)
