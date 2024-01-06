@@ -113,3 +113,5 @@ async function main(){
     await get_chat_page()
   }
 }
+
+main()
