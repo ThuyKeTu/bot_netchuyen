@@ -124,22 +124,24 @@ async function main(){
 }
 
 main()
-var list_lv6 =[]
+
 
 async function get_Lv6(){
   return new Promise(resolve => {
-  fss.readFile('./data/leve6.txt', 'utf8', async (err, data) => {
+  fss.readFile('./data/phongthan.txt', 'utf8', async (err, data) => {
     if (err) {
       console.error(err);
       return;
     }else{
-      list_lv6 = data.split('\r\n')
+      let list_lv6 = data.split('\r\n')
       console.log(list_lv6.length)
       for(i=0;i<list_lv6.length;i++){
         let text = `top ${i+1}:  ${list_lv6[i]}`
-        chat(text)
+        await chat(text)
       }
       setTimeout(resolve,3000)
     }
-  });
+  })
 })}
+
+
