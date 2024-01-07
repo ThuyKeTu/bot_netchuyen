@@ -83,6 +83,12 @@ async function get_chat_page(){
           }else{
             chat('...').then(resolve)
           }
+        }else if(cmt_last =="Phong thần bảng"){
+          if(id_last == '/user/447259'){
+            get_Lv6().then(resolve)
+          }else{
+            chat('bạn chưa có quyền sử dụng lệnh này').then(resolve)
+          }
         }else{
           console.log(cmt_last)
           setTimeout(resolve,1000)
@@ -118,5 +124,22 @@ async function main(){
 }
 
 main()
+var list_lv6 =[]
 
-
+async function get_Lv6(){
+  return new Promise(resolve => {
+  fss.readFile('./data/leve6.txt', 'utf8', async (err, data) => {
+    if (err) {
+      console.error(err);
+      return;
+    }else{
+      list_lv6 = data.split('\r\n')
+      console.log(list_lv6.length)
+      for(i=0;i<list_lv6.length;i++){
+        let text = `top ${i+1}:  ${list_lv6[i]}`
+        chat(text)
+      }
+      setTimeout(resolve,3000)
+    }
+  });
+})}
