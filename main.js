@@ -65,11 +65,11 @@ async function get_chat_page(){
         switch(cmt_last){
           case "Myid":
               text = `ID của ${name_last} là : ${id_last}`
-              await chat(id_last).then(resolve)
+              await chat(text).then(resolve)
               break;
           case "Mylv":
               text = `LV của ${name_last} là : ${lv_last}:${pt_last}`
-              await chat(id_last).then(resolve)
+              await chat(text).then(resolve)
               break;
           case "Ta muốn độ kiếp":
               if(pt_last =='99%' || pt_last == '100%'){
