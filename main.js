@@ -1,12 +1,14 @@
 const fs = require('fs/promises');
 const fss = require('node:fs');
 const jsdom = require("jsdom");
+const { resolve } = require('path');
 const { JSDOM } = jsdom;
 
-var Bot_Cookie = "_ga=GA1.1.768879700.1696165315; ASP.NET_SessionId=dxelloq25bpd2r1gj0iykesx; cf_clearance=UIZsbaxF15GVsp1Hm96rGesdvBC6FEsjSX99WEBtNZc-1704508062-0-2-f21cdf88.f89fd8c6.243cf3d0-0.2.1704508062; returnurl1=/; .ASPXAUTH=B3B54D22C800FFD908AF6E64C333508BE8736936488A40757752F27B119560DA8FBD5F735FB391A92807B5AE33F64EF309D120FD4B78E1B85412DAF8776D116EEE3EB90304D6C0D4923675E39CC30B6123B760F18CDD3F92E817A0DFC369902ADD353D0575B70D968CE8206B98FE65954C7F0B7D8E525817C2F520CFB74E1038329CB2E8EFE839787244D4F5B7B26F7F87F155CADF8827ABD5DFF35815EECDB8660A3F412FA51C38A6088EA26CD5FA066E984F751046F2F885D8FBBFD4CED50ADA1D5A1C; netchuyen.comportalroles1=1EA952F1EF269F483E3A9E5DCB4EEB33431D6E8015C6F98143D13870BA28F3F07FF31AB279D599CC751B9B05892E1999C95863F52267C04E36700E2C1F2A9D0054C4329781C284B9E8FA2D8EC41A0667C7B5221FAB2309F62C2AE334724F51F24292C6579D49C98EEA440A8675A52872158100B29696A1596921C80C0F430283EEF00C2ECA194B33024E3AE6E04297D29EF11611920998E17D47857D81A3771BEFCAAD00; _ga_6TELXYEN9X=GS1.1.1704508062.4.1.1704508078.0.0.0"
+var Bot_Cookie = "_ga=GA1.1.768879700.1696165315; cf_clearance=XLPPACD997oPGsNYUmUPHJHQfa_qqyMjpOgtM41a6Vw-1704804338-0-2-98a85f3d.43fe2b45.a39bb440-0.2.1704804338; .ASPXAUTH=BA43440EF457B79701249DD757F983420E2E8D09716CF6F8249AD4D883B36A83EBDD45BE037600197A37B83202688F533AE44F900F0365F3BFF2B19556D2A53213E72D18296D6AA42A891F82E65BC61B2515A730661C5E91036B1375ABE2E8258962663846A6BA971DDA26A4B81F0AB19BD44D0C0EF7E669B0CDE3CAB9710239C4EB06682099196EBCA01A24796B1C115ABC62DA975563F0199FF72AB48E75F910BBB55246C2D615F8123EA6CC53A6AE636C66A9EA9871D63FF39B3026F4D7F9B48C530502963D4CE8CBA89724BC397EB7B29102; ASP.NET_SessionId=w4f4opbe3cxzohf5au4itcb4; netchuyen.comportalroles1=429684C64068D76E53CC8E2156582EA59A923A1D6B6C20685385C5577FC34F998BF277F548FBE596CA9F811887DD91293425C79F599BCEDB99E0D2D88C15512EB7336C39955622BC1660DBBDEEAAA48375C454E86777AA43864A229F3BCE9F031263283E083A0C3BCBDB156E1DAB4CB5B72A3DC46F740C140EE4D753F2E1C05DB7852E001572689D5732069EE3C26DB015E8DDCFBE9DEC58BB62BC05534BB912545E7D6F9527207994D22C2A4DC4F1FE0F26C672; _ga_6TELXYEN9X=GS1.1.1704804337.14.1.1704804825.0.0.0"
 
 async function chat(message){
     return new Promise(resolve => {
+      console.log(message)
             fetch('https://netchuyen.com/Post/Services/ChatService.asmx/Send',{
               method: "POST",
               headers: {
@@ -20,21 +22,10 @@ async function chat(message){
                   }
                 )  
           }).then(resolve)
+         
     })
 }
 
-
-function read_bot_cookie(){
-  fss.readFile('./data/account.txt', 'utf8', (err, data) => {
-    if (err) {
-      console.error(err);
-      return;
-    }else{
-      Bot_Cookie = data
-      console.log(Bot_Cookie)
-    }
-  });
-}
 
 // read_bot_cookie()
 
@@ -60,62 +51,76 @@ async function get_chat_page(){
       "mode": "cors",
       "credentials": "include"
     }).then((response) => response.json())
-      .then((data) => {
+      .then(async (data) => {
         // console.log(data.data)
         let dom = new JSDOM(data.data);
         let mainnode = dom.window.document
-        let id_last = mainnode.querySelectorAll('li')[19].querySelector('a').href
+        let id_last = mainnode.querySelectorAll('li')[19].querySelector('a').href.split('/user/')[1]
+        let name_last = mainnode.querySelectorAll('li')[19].querySelector('.name').textContent
         let cmt_last =  mainnode.querySelectorAll('li')[19].querySelector('p').textContent
-        
-        if(cmt_last =='gettop5'){
-          if(id_last == '/user/447259'){
-            get_top5().then(resolve)
-          }else{
-            chat('bạn chưa có quyền sử dụng lệnh này').then(resolve)
-          }
-        }else if(cmt_last =="myid"){
-          let idusercheck = id_last.split('/user/')[1]   
-          let text = `id của bạn là:${idusercheck}`
-          chat(text).then(resolve)
-        }else if(cmt_last.includes('lập lời thề')){
-          if(Math.floor(Math.random() * 10) <=6){
-            chat("==============CHUẨN ==============").then(resolve)
-          }else{
-            chat('...').then(resolve)
-          }
-        }else if(cmt_last =="Phong thần bảng"){
-          if(id_last == '/user/447259'){
-            get_Lv6().then(resolve)
-          }else{
-            chat('bạn chưa có quyền sử dụng lệnh này').then(resolve)
-          }
-        }else{
-          console.log(cmt_last)
-          setTimeout(resolve,1000)
-        }
+        let lv_last = mainnode.querySelectorAll('li')[19].querySelector('.member').textContent
+        let pt_last = mainnode.querySelectorAll('li')[19].querySelector('.progress-bar').style.width
+        console.log(cmt_last)
+        let text = ""
+        switch(cmt_last){
+          case "Myid":
+              text = `ID của ${name_last} là : ${id_last}`
+              await chat(id_last).then(resolve)
+              break;
+          case "Mylv":
+              text = `LV của ${name_last} là : ${lv_last}:${pt_last}`
+              await chat(id_last).then(resolve)
+              break;
+          case "Ta muốn độ kiếp":
+              if(pt_last =='99%' || pt_last == '100%'){
+                chat("Làm đéo j có chức năng này").then(resolve)
+              }else{
+                chat("Chưa thể độ kiếp lúc này, hãy cải thiện thực lực").then(resolve)
+              }
+              break;
+          default:
+              if(cmt_last.includes('#id')){
+                  let name = (cmt_last.match(/@(.*?): #id/)||[])[1]
+                  if(name  != undefined){
+                      let id_log = ""
+                      for(let i=0;i<mainnode.querySelectorAll('li').length;i++){
+                          if(mainnode.querySelectorAll('li')[i].querySelector('.name').textContent == name){
+                              id_log = mainnode.querySelectorAll('li')[i].querySelector('a').href.split('/user/')[1]
+                          }
+                      }
+                      let text=`Id của @${name} là: ${id_log}`
+                      await chat(text).then(resolve)
+                  }else{
+                      resolve()
+                  }
+              }else if(cmt_last.includes('#lv')){
+                  let name = (cmt_last.match(/@(.*?): #lv/)||[])[1]
+                  if(name  != undefined){
+                      let pt_log = ""
+                      let lv_log =""
+                      for(let i=0;i<mainnode.querySelectorAll('li').length;i++){
+                          if(mainnode.querySelectorAll('li')[i].querySelector('.name').textContent == name){
+                              pt_log = mainnode.querySelectorAll('li')[i].querySelector('.progress-bar').style.width
+                              lv_log = mainnode.querySelectorAll('li')[i].querySelector('.member').textContent
+                          }
+                      }
+                      let text=`Tu vi của @${name} là: ${lv_log}:${pt_log}`
+                      await chat(text).then(resolve)
+                  }else{
+                      resolve()
+                  }
+              }else if(cmt_last.slice(0,4)=='#Top'){
+                let top = parseInt(cmt_last.slice(4))
+                gettop(top).then()
+                await chat(text).then(resolve)
+            }else{
+                  setTimeout(resolve,100);
+              }
+      }
+
       })
 })}
       
-async function get_top5(){
-  return new Promise(resolve => {
-    fetch('https://netchuyen.com/Post/Services/PostService.asmx/TopMembers?top=5',{
-            method: "GET",
-          }).then((response) => response.json())
-          .then(async (data) => {
-               let dom = new JSDOM(data.data)
-               let listuser = dom.window.document.querySelectorAll('li')
-               for(let i=0;i<5;i++){
-                  let name = listuser[i].querySelector(".title").textContent
-                  let lv = listuser[i].querySelector(".member").textContent
-                  let pecent = listuser[i].querySelector(".progress-bar").style.width
-                  let text = `top${i+1}:${name}----${lv}:${pecent}`
-                  await chat(text)
-               }  
-                setTimeout(resolve,3000)
-            })
-})}
-
-
 
 async function main(){
   for(i=0;i<=1;i=0){
@@ -125,23 +130,30 @@ async function main(){
 
 main()
 
-
-async function get_Lv6(){
-  return new Promise(resolve => {
-  fss.readFile('./data/phongthan.txt', 'utf8', async (err, data) => {
-    if (err) {
-      console.error(err);
-      return;
-    }else{
-      let list_lv6 = data.split('\r\n')
-      console.log(list_lv6.length)
-      for(i=0;i<list_lv6.length;i++){
-        let text = `top ${i+1}:  ${list_lv6[i]}`
-        await chat(text)
+  async function gettop(index){
+    return new Promise(resolve => {
+      fss.readFile('./data/phongthan.txt', 'utf8', async (err, data) => {
+      if (err) {
+        console.error(err);
+        return;
+      }else{
+        let list_lv6 = data.split('--')
+        console.log(list_lv6.length)
+        
+        if(index <=list_lv6.length){
+          let text = `top ${index}:  ${list_lv6[index -1]}`
+          await chat(text).then(resolve)
+        }
+        else{
+          await chat('Người này chưa đạt tu vi Luyện Hư cảnh').then(resolve)
+        }
       }
-      setTimeout(resolve,3000)
-    }
+    })
   })
-})}
+}
+
+
+
+
 
 
